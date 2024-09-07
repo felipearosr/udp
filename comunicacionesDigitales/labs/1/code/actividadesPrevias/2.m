@@ -1,0 +1,84 @@
+function plot_pam_signal()
+    % Parámetros de la señal sinusoidal
+    A = 1; % Amplitud
+    fc = 1000; % Frecuencia en Hz
+
+    % Parámetros iniciales de la modulación PAM
+    fs_initial = 10000; % Frecuencia de muestreo inicial (Hz)
+    d_initial = 0.5; % Ciclo de trabajo inicial
+
+    % Crear la figura y los ejes
+    fig = figure('Position', [100, 100, 800, 800]);
+    ax1 = subplot(2,1,1);
+    ax2 = subplot(2,1,2);
+
+    % Crear los sliders
+    slider_fs = uicontrol('Parent', fig, 'Style', 'slider', ...
+        'Position', [150, 60, 500, 20], ...
+        'Min', 2000, 'Max', 20000, 'Value', fs_initial, ...
+        'SliderStep', [0.001 0.01]);
+
+    slider_d = uicontrol('Parent', fig, 'Style', 'slider', ...
+        'Position', [150, 20, 500, 20], ...
+        'Min', 0.1, 'Max', 0.9, 'Value', d_initial, ...
+        'SliderStep', [0.01 0.1]);
+
+    % Etiquetas para los sliders
+    uicontrol('Parent', fig, 'Style', 'text', ...
+        'Position', [150, 85, 200, 20], ...
+        'String', 'Frecuencia de muestreo (fs):');
+
+    uicontrol('Parent', fig, 'Style', 'text', ...
+        'Position', [150, 45, 200, 20], ...
+        'String', 'Ciclo de trabajo (d):');
+
+    % Texto para mostrar los valores actuales
+    fs_text = uicontrol('Parent', fig, 'Style', 'text', ...
+        'Position', [660, 60, 100, 20]);
+
+    d_text = uicontrol('Parent', fig, 'Style', 'text', ...
+        'Position', [660, 20, 100, 20]);
+
+    % Función para actualizar la gráfica
+    function update_plot(~, ~)
+        fs = round(slider_fs.Value);
+        d = slider_d.Value;
+        fs_text.String = sprintf('fs = %d Hz', fs);
+        d_text.String = sprintf('d = %.2f', d);
+
+        % Creación del vector de tiempo
+        t = 0:1/100000:0.01; % Alta resolución para una representación suave
+
+        % Generación de la señal sinusoidal
+        m_t = A * sin(2*pi*fc*t);
+
+        % Generación del reloj binario (onda cuadrada)
+        reloj_binario = square(2 * pi * fs * t, d * 100);
+
+        % Muestreo natural: Multiplicación de la señal original por el reloj binario
+        pam_natural = m_t .* (reloj_binario > 0);
+
+        % Actualizar las gráficas
+        plot(ax1, t, m_t);
+        xlabel(ax1, 'Tiempo (s)');
+        ylabel(ax1, 'Amplitud');
+        title(ax1, 'Señal sinusoidal m(t)');
+        grid(ax1, 'on');
+
+        plot(ax2, t, pam_natural);
+        xlabel(ax2, 'Tiempo (s)');
+        ylabel(ax2, 'Amplitud');
+        title(ax2, 'Señal PAM con Muestreo Natural');
+        grid(ax2, 'on');
+    end
+
+    % Asociar la función de actualización a los sliders
+    slider_fs.Callback = @update_plot;
+    slider_d.Callback = @update_plot;
+
+    % Dibujar la gráfica inicial
+    update_plot();
+end
+
+% Llamar a la función principal
+plot_pam_signal();
