@@ -8,9 +8,8 @@ function plot_pam_signal()
     d_initial = 0.5; % Ciclo de trabajo inicial
 
     % Crear la figura y los ejes
-    fig = figure('Position', [100, 100, 800, 800]);
-    ax1 = subplot(2,1,1);
-    ax2 = subplot(2,1,2);
+    fig = figure('Position', [100, 100, 800, 600]);
+    ax = axes('Parent', fig, 'Position', [0.1, 0.2, 0.8, 0.7]);
 
     % Crear los sliders
     slider_fs = uicontrol('Parent', fig, 'Style', 'slider', ...
@@ -58,18 +57,12 @@ function plot_pam_signal()
         % Muestreo natural: Multiplicación de la señal original por el reloj binario
         pam_natural = m_t .* (reloj_binario > 0);
 
-        % Actualizar las gráficas
-        plot(ax1, t, m_t);
-        xlabel(ax1, 'Tiempo (s)');
-        ylabel(ax1, 'Amplitud');
-        title(ax1, 'Señal sinusoidal m(t)');
-        grid(ax1, 'on');
-
-        plot(ax2, t, pam_natural);
-        xlabel(ax2, 'Tiempo (s)');
-        ylabel(ax2, 'Amplitud');
-        title(ax2, 'Señal PAM con Muestreo Natural');
-        grid(ax2, 'on');
+        % Actualizar la gráfica
+        plot(ax, t, pam_natural);
+        xlabel(ax, 'Tiempo (s)');
+        ylabel(ax, 'Amplitud');
+        title(ax, 'Señal PAM con Muestreo Natural');
+        grid(ax, 'on');
     end
 
     % Asociar la función de actualización a los sliders
